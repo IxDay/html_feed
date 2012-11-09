@@ -5,22 +5,24 @@ __author__ = 'mvidori'
 
 
 def initialize(document):
-    links_struct = {}
-
-
     def parse_links(struct,document):
-        if document.has_key("link") :
-            for elt in document['link']:
-                Link(elt)
+        for key in document:
+            if isinstance(document[key],list) :
+                struct[key] = []
+                for elt in document[key]:
+                    link = Link(elt['link'])
+                    if elt.has_key('courses'):
+                        link.courses = elt['courses']
+                    struct[key].append(link)
 
-        else :
-            for key in document:
-                if document[key].has_key("link") :
-                    struct[key] = []
-                else:
-                    struct[key] = {}
+            else:
+                struct[key] = {}
                 parse_links(struct[key],document[key])
 
+    def parse_parsing(struct,document):
+        pass
+
+    links_struct = {}
     parse_links(links_struct, document["links"])
-    print(links_struct)
+
 
