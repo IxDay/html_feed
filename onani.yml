@@ -1,0 +1,31 @@
+#aliases:  # just a dummy key for placing alias values however aliases can be defined anywhere
+#  &myAliasName
+#    datakey: dataval
+#    moredata: morevals
+#
+#config:
+#  *myAliasName  # this will be replaced with the two values from above as the plugin reads this config
+
+links :
+  onani:
+    volume4:
+      - entitled : http://mangafox.me/manga/onani_master_kurosawa/v04/c{}/1.html
+        courses:
+          - 025-031 +1
+    volume3:
+      link:
+        - http://mangafox.me/manga/onani_master_kurosawa/v03/c{}/1.html
+      courses:
+        - 017-024 +1
+parsing :
+  onani:
+    img:
+      src:
+        entitled : http://c.mfcdn.net/store/manga/{}.jpg
+        regex :
+          - '*([0-9])+.jpg'
+    function:
+      - dl
+next :
+  onani:
+    class : btn prev_page
