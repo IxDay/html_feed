@@ -13,10 +13,9 @@ links :
         courses:
           - 025-031 +1
     volume3:
-      link:
-        - http://mangafox.me/manga/onani_master_kurosawa/v03/c{}/1.html
-      courses:
-        - 017-024 +1
+      - entitled : http://mangafox.me/manga/onani_master_kurosawa/v03/c{}/1.html
+        courses:
+          - 017-024 +1
 parsing :
   onani:
     img:
