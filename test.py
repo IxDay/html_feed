@@ -28,9 +28,12 @@ def beautifulSoup():
 def pyYAML():
     f = open('onani.yml')
     y = yaml.load(f.read())
-
     f.close()
-    utils.initialize(y)
+
+    links_struct = utils.initialize(y)
+    for link in utils.get_links(links_struct):
+        link.get_links()
+
 
 def test_dict():
     toto = {}
@@ -45,9 +48,34 @@ def ternary():
     test = (toto == 'test' and 'ok' or 'nok')
     print(test)
 
+def test_splat():
+    toto = ['toto','titi','tutu']
+    print('{} {} {}'.format(*toto))
+
+
+def test_for():
+    i = 0
+#    for x in range(25):
+#        for y in range(25):
+#            i += 1
+#            print i
+#            print x,y
+
+    toto = [ [x,y] for x in range(25) for y in range(25)]
+    print(toto)
+
+def test_list():
+    l1 = [1,2]
+    l2 = [1,2,3]
+
 
 if __name__ == "__main__":
 #    beautifulSoup()
-    pyYAML()
 #    test_dict()
 #    ternary()
+#    test_splat()
+#    test_for()
+#    test_list()
+    pyYAML()
+
+

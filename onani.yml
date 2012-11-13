@@ -11,11 +11,18 @@ links :
     volume4:
       - entitled : http://mangafox.me/manga/onani_master_kurosawa/v04/c{}/1.html
         courses:
-          - 025-031 +1
+          - start: '025'
+            end: '031'
+            step: '1'
     volume3:
-      - entitled : http://mangafox.me/manga/onani_master_kurosawa/v03/c{}/1.html
+      - entitled : http://mangafox.me/manga/onani_master_kurosawa/v03/c{}/{}.html
         courses:
-          - 017-024 +1
+          - start: '017'
+            end: '024'
+            step: '1'
+          - start: '012'
+            end: '015'
+            step: '1'
 parsing :
   onani:
     img:

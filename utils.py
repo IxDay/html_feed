@@ -4,19 +4,19 @@ from objects import Link
 __author__ = 'mvidori'
 
 
-def initialize(document):
-    def get_links(struct):
-        if isinstance(struct, Link):
-            return [struct]
-        if not len(struct):
-            return []
-        if isinstance(struct, dict):
-            struct = dict(struct)
-            return get_links(struct.popitem()[1]) + get_links(struct)
-        if isinstance(struct, list):
-            struct = list(struct)
-            return get_links(struct.pop()) + get_links(struct)
+def get_links(struct):
+    if isinstance(struct, Link):
+        return [struct]
+    if not len(struct):
+        return []
+    if isinstance(struct, dict):
+        struct = dict(struct)
+        return get_links(struct.popitem()[1]) + get_links(struct)
+    if isinstance(struct, list):
+        struct = list(struct)
+        return get_links(struct.pop()) + get_links(struct)
 
+def initialize(document):
 
     def parse_links(struct, document):
         if isinstance(document, list):
@@ -46,14 +46,10 @@ def initialize(document):
                         link.next[key] = value
 
 
-
-
     links_struct = {}
     parse_links(links_struct, document['links'])
     parse_parsing_next(links_struct, document['parsing'],True)
     parse_parsing_next(links_struct, document['next'],False)
-    print('toto')
 
-
-#    print(links_struct)
+    return links_struct
 
