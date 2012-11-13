@@ -2,19 +2,12 @@ __author__ = 'mvidori'
 
 
 class Link:
-    def __init__(self, name, courses=None, catchers=None):
+    def __init__(self, name):
         self.name = name
-        if courses is None:
-            self.courses = []
-        else:
-            self.courses = courses
-
-        if catchers is None:
-            self.catchers = {}
-        else:
-            self.catchers = catchers
+        self.courses = []
+        self.catchers = {}
+        self.next = {}
 
 
     def __repr__(self):
-        return 'Link({},{},{})'.format(self.name,self.courses,self.catchers)
-
+        return 'Link({})'.format(self.name)

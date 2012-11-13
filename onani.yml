@@ -20,11 +20,9 @@ parsing :
   onani:
     img:
       src:
-        entitled : http://c.mfcdn.net/store/manga/{}.jpg
-        regex :
-          - '*([0-9])+.jpg'
-    function:
-      - dl
+        - entitled : http://c.mfcdn.net/store/manga/{}.jpg
+          regex :
+            - '*([0-9])+.jpg'
 next :
   onani:
     class : btn prev_page

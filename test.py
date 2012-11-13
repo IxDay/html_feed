@@ -6,7 +6,6 @@ __author__ = 'mvidori'
 
 from bs4 import BeautifulSoup
 import yaml
-from pages import Pages
 
 def beautifulSoup():
     html_doc = """
@@ -37,8 +36,18 @@ def test_dict():
     toto = {}
     toto['titi'] = {}
     print(toto)
+#    toto = {}
+#    toto += {'test':3}
+#    print(toto)
+
+def ternary():
+    toto = 'test'
+    test = (toto == 'test' and 'ok' or 'nok')
+    print(test)
+
 
 if __name__ == "__main__":
 #    beautifulSoup()
     pyYAML()
 #    test_dict()
+#    ternary()
