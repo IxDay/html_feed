@@ -30,21 +30,22 @@ def pyYAML():
     y = yaml.load(f.read())
     f.close()
 
-    links_struct = utils.initialize(y)
+    link = utils.initialize(y)[0]
+    link.get_elements()
+    print('toto')
 
-    import urllib
-    for link in utils.get_links(links_struct):
-        for link_entitled in link.get_links():
-            html_page = urllib.urlopen(link_entitled)
-            html_page.read()
+def test_yml():
+    f = open('onani.yml')
+y = yaml.load(f.read())
+f.close()
 
-
-
+def test_tuple():
+    tup = ('1','2','3')
+    print(tup[2])
 
 def test_dict():
-    toto = {}
-    toto['titi'] = {}
-    print(toto)
+    toto = {'titi': {}}
+    print(toto.values())
 #    toto = {}
 #    toto += {'test':3}
 #    print(toto)
@@ -83,21 +84,46 @@ def get_html_page():
     html_file.close()
 
 def test_beautiful():
-    f = open('page.html','r')
-    html_feed = f.read()
-    f.close()
-    soup = BeautifulSoup(html_feed)
-
 
     f = open('onani.yml')
     y = yaml.load(f.read())
     f.close()
 
-    links_struct = utils.initialize(y)
-    link = utils.get_links(links_struct)[0]
+    links = utils.initialize(y)[0]
+    links.get_elements()
+    print('toto')
 
 
 
+def test_format():
+    print('test{}test'.format('test'*0))
+
+def test_urllib():
+    import urllib2
+    try :
+        f = urllib2.urlopen("https://tresdfsdt.fr")
+        print f.info()
+    except urllib2.HTTPError:
+        print("erreur HTTP")
+        raise
+    except urllib2.URLError:
+        print("mauvaise url")
+        raise
+
+
+def test_class():
+    class Toto:
+        def __init__(self):
+            self.name = 'test'
+
+        def function_lambda(self):
+            def internal():
+                print(self.name)
+
+            internal()
+
+    var = Toto()
+    var.function_lambda()
 
 
 if __name__ == "__main__":
@@ -107,8 +133,12 @@ if __name__ == "__main__":
 #    test_splat()
 #    test_for()
 #    test_list()
-#    pyYAML()
-    test_beautiful()
+#    test_format()
+#    test_urllib()
+#    test_class()
+#    test_tuple()
+    pyYAML()
+#    test_beautiful()
 
 
 

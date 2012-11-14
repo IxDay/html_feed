@@ -14,6 +14,12 @@ links :
           - start: '025'
             end: '031'
             step: '1'
+    volume3:
+      - entitled : http://mangafox.me/manga/onani_master_kurosawa/v03/c{}/1.html
+        courses:
+          - start: '017'
+            end: '024'
+            step: '1'
 parsing :
   onani:
     img:
@@ -24,4 +30,3 @@ parsing :
 next :
   onani:
     class : btn next_page
-    onclick: !not |
