@@ -31,8 +31,14 @@ def pyYAML():
     f.close()
 
     links_struct = utils.initialize(y)
+
+    import urllib
     for link in utils.get_links(links_struct):
-        link.get_links()
+        for link_entitled in link.get_links():
+            html_page = urllib.urlopen(link_entitled)
+            html_page.read()
+
+
 
 
 def test_dict():
@@ -68,6 +74,31 @@ def test_list():
     l1 = [1,2]
     l2 = [1,2,3]
 
+def get_html_page():
+    import urllib
+    f = urllib.urlopen('http://mangafox.me/manga/onani_master_kurosawa/v04/c025/1.html')
+    html_file = open('page.html','w')
+    html_file.write(f.read())
+    f.close()
+    html_file.close()
+
+def test_beautiful():
+    f = open('page.html','r')
+    html_feed = f.read()
+    f.close()
+    soup = BeautifulSoup(html_feed)
+
+
+    f = open('onani.yml')
+    y = yaml.load(f.read())
+    f.close()
+
+    links_struct = utils.initialize(y)
+    link = utils.get_links(links_struct)[0]
+
+
+
+
 
 if __name__ == "__main__":
 #    beautifulSoup()
@@ -76,6 +107,8 @@ if __name__ == "__main__":
 #    test_splat()
 #    test_for()
 #    test_list()
-    pyYAML()
+#    pyYAML()
+    test_beautiful()
+
 
 

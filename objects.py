@@ -10,30 +10,33 @@ class Link:
         self.next = {}
 
 
+
     def __repr__(self):
         return 'Link({})'.format(self.name)
 
 
-    def _course_generator(self, course):
-        for value in range(
-            int(course['start']),
-            int(course['end']) + 1,
-            int(course['step'])):
-            yield value
-
-
     def get_links(self):
-        import urllib
+        if not hasattr(self,'links'):
+
+            def course_generator(course):
+                length = len(course['start'])
+
+                for value in range(
+                    int(course['start']),
+                    int(course['end']) + 1,
+                    int(course['step'])):
+
+                    value = '{}{}'.format(
+                        '0'*(length - len(str(value))),
+                        value
+                    )
+                    yield value
 
 
-        generators = []
-        for course in self.courses:
-            generators.append(self._course_generator(course))
+            import itertools
+            combinations = itertools.product(
+                *[course_generator(course) for course in self.courses]
+            )
 
-        for generator in generators:
-            print(generator.next())
-
-
-
-
-
+            self.links = [self.name.format(*link) for link in combinations]
+        return self.links
