@@ -44,7 +44,7 @@ class Link:
 
 
     def get_elements(self, start=0, end=None, fail_on_error=False):
-        def get_html_feed(link, fail_on_error):
+        def get_html_feed(link):
             import urllib2
 
             try:
@@ -67,6 +67,19 @@ class Link:
             import bs4
             import re
 
+            def get_next():
+                next = soup.find_all('a', self.next)
+                if len(next):
+                    if 'http://' not in next:
+                        return '{}/{}'.format(
+                            link.rpartition('/')[0],
+                            next[0].get('href')
+                        )
+                    else:
+                        return next[0].get('href')
+                else:
+                    return None
+
             soup = bs4.BeautifulSoup(html_feed, "html5lib")
 
             for tag, attrs in self.catchers.items():
@@ -77,29 +90,21 @@ class Link:
                             value['entitled'].format(*value['regex']))
                         self.elements[tag] += soup.find_all(tag,
                                 {attr: regex})
-
-            next = soup.find_all('a', self.next)
-            if len(next):
-                if 'http://' not in next:
-                    return '{}/{}'.format(
-                        link.rpartition('/')[0],
-                        next[0].get('href')
-                    )
-                else:
-                    return next[0].get('href')
-            else:
-                return None
+            return get_next()
 
 
         self.get_links()
 
-        if end is None:
+        if end is None or end > len(self.links):
             end = len(self.links)
+
+        if end < 0:
+            pass
 
         for index, link in enumerate(self.links):
             next = link
             while next is not None:
-                html_feed = get_html_feed(next, fail_on_error)
+                html_feed = get_html_feed(next)
                 if html_feed is not None:
                     next = parse_html(html_feed,next)
                 print next
