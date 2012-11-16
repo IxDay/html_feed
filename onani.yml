@@ -16,18 +16,23 @@ links :
             step: '1'
 parsing :
   onani:
-    img 1:
+    img:
       needed:
         src:
-          entitled : http://c.mfcdn.net/store/manga/{}.jpg
-          regex :
-            - '.*([0-9])+'
+          -
+            entitled : http://c.mfcdn.net/store/manga/{}.jpg
+            regex :
+              - '.*([0-9])+'
+          -
+            entitled : toto
+          - titi
       not:
-        id: toto
-        class: tutu
+        or :
+          - id: toto
+          - class: tutu
 next :
   onani:
-    link 1:
+    link:
       needed :
         class : btn next_page
       not :

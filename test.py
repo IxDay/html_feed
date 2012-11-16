@@ -38,8 +38,6 @@ def test_yml():
     y = yaml.load(f.read())
     f.close()
 
-
-
 def test_tuple():
     tup = ('1', '2', '3')
     print(tup[2])
@@ -135,67 +133,67 @@ def test_class():
     var = Toto()
     var.function_lambda()
     var.function_lambda('titi')
-test_class()
 
+def test_func():
+    list_func = []
+    list_param = ['foo','bar']
+    for i in list_param:
+        def print_func():
+            print(i)
+
+        list_func += [print_func]
+
+    for func in list_func:
+        func()
+
+class TagRetriever():
+    needed = {'src': [{'regex': ['.*([0-9])+'], 'entitled': 'http://c.mfcdn.net/store/manga/{}.jpg'}, {'entitled': 'toto'}, 'titi']}
+    not_needed = {'or': [{'id': 'toto'}, {'class': 'tutu'}]}
+
+    def __init__(self,tag,attrs):
+        self.tag = tag
+        if 'needed' in attrs:
+            self.needed = attrs['needed']
+        else:
+            self.needed = attrs
+        if 'not' in attrs :
+            self.not_needed = attrs['not']
+        else:
+            self.not_needed = None
+
+        self.function = self.build_function
+
+
+    def build_function(self,tag):
+        def retrieve_attr(tag,elements):
+            for key,value in elements.items():
+                if key == "or":
+                    return any([retrieve_attr(tag,val) for val in value])
+                elif key == "and":
+                    return all([retrieve_attr(tag,val) for val in value])
+                else:
+                    if tag.has_key(key):
+                        if isinstance(value,list):
+                            return any([tag['key'] == val for val in value])
+                        else :
+                            return tag['key'] == value
+                    else:
+                        return False
+
+        if self.not_needed is None:
+            return retrieve_attr(tag,self.needed)
+        else:
+            return retrieve_attr(tag,self.needed) \
+                    and not retrieve_attr(tag,self.not_needed)
+
+
+    def __call__(self,tag):
+        return self.function(tag)
 
 def test_parsing():
     f = open('page.html','r')
     beauty = BeautifulSoup(f.read(),'html5lib')
     f.close()
-
-    next = {'link 1': {'not': {'onclick': 'next_chapter()'}, 'needed': {'class': 'btn next_page'}}}
-    catchers = {'img 1': {'not': {'id': 'toto'}, 'needed': {'src': {'regex': ['.*([0-9])+'], 'entitled': 'http://c.mfcdn.net/store/manga/{}.jpg'}}}}
-
-
-    tag_to_retrieve = {'not': {'onclick': 'next_chapter()'}, 'needed': {'class': 'btn next_page'}}
-    elements = {}
-
-    def retrieve_tag(tag):
-        if 'not' in tag_to_retrieve:
-            pass
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        found = False
-        for attr,values in next['not']:
-            if tag.has_key(attr):
-                for value in values:
-                    found = found and tag.attrs[attr] == values
-
-
-        tag_not_needed = False
-        tag_needed = False
-        if 'needed' in next:
-            needed = next['needed']
-        else:
-            needed = next
-
-        for attr,value in next['not']:
-            tag_not_needed = tag_not_needed and\
-                             tag.has_key(attr) and\
-                             tag.attrs[attr] == value
-
-
-
-#    def has_class_but_no_id(tag):
-#        if tag.has_key('style'):
-#            print tag.attrs['style']
-#        return tag.has_key('class') and not tag.has_key('id')
-
-
-#    result = beauty.find_all(retrieve_tag() and )
-#    print(result)
 
 
 if __name__ == "__main__":
