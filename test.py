@@ -146,6 +146,23 @@ def test_func():
     for func in list_func:
         func()
 
+def test_tag_retrieve():
+    f = open('page.html')
+    soup = BeautifulSoup(f.read())
+    f.close()
+
+    def retrieve(tag):
+        import re
+        toto = re.compile('left-skyscraper')
+
+        if 'id' in tag.attrs and toto.match(tag.attrs['id']):
+            print(tag)
+        return True
+
+    soup.find_all(retrieve)
+
+test_tag_retrieve()
+
 class TagRetriever():
     needed = {'src': [{'regex': ['.*([0-9])+'], 'entitled': 'http://c.mfcdn.net/store/manga/{}.jpg'}, {'entitled': 'toto'}, 'titi']}
     not_needed = {'or': [{'id': 'toto'}, {'class': 'tutu'}]}
@@ -165,18 +182,29 @@ class TagRetriever():
 
 
     def build_function(self,tag):
+        def eval_value(value):
+            if isinstance(value,str):
+                return value
+            if isinstance(value,dict) and 'entitled' in value:
+                if 'regex' in value:
+                    return value['entitled'].format(value['regex'])
+                else:
+                    return value['entitled']
+
+
+
         def retrieve_attr(tag,elements):
-            for key,value in elements.items():
+            for key,values in elements.items():
                 if key == "or":
-                    return any([retrieve_attr(tag,val) for val in value])
+                    return any([retrieve_attr(tag,value) for value in values])
                 elif key == "and":
-                    return all([retrieve_attr(tag,val) for val in value])
+                    return all([retrieve_attr(tag,value) for value in values])
                 else:
                     if tag.has_key(key):
-                        if isinstance(value,list):
-                            return any([tag['key'] == val for val in value])
+                        if isinstance(values,list):
+                            return any([tag['key'] == value for value in values])
                         else :
-                            return tag['key'] == value
+                            return tag['key'] == values
                     else:
                         return False
 
