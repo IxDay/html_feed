@@ -26,7 +26,7 @@ parsing :
           -
             entitled : toto
           - titi
-      not:
+      not_needed:
         or :
           - id: toto
           - class: tutu
@@ -35,5 +35,5 @@ next :
     link:
       needed :
         class : btn next_page
-      not :
+      not_needed :
         onclick : next_chapter()

@@ -24,7 +24,7 @@ def beautifulSoup():
     soup = BeautifulSoup(html_doc)
     print(soup.prettify())
 
-def pyYAML():
+def test_main():
     f = open('onani.yml')
     y = yaml.load(f.read())
     f.close()
@@ -32,6 +32,8 @@ def pyYAML():
     link = utils.initialize(y)[0]
     link.get_elements()
     print('toto')
+
+test_main()
 
 def test_yml():
     f = open('onani.yml')
@@ -51,9 +53,12 @@ def test_dict():
 #    print(toto.values())
 #    if 'toto' in toto and toto['toto'] == 'ok':
 #        print('ok')
-    toto = True
-    toto = toto or False
-    print(toto)
+#    toto = True
+#    toto = toto or False
+#    print(toto)
+    dic = {'toto': 1, 'titi': 2}
+    for i in dic:
+        print(i)
 
 def ternary():
     toto = 'test'
@@ -136,10 +141,11 @@ def test_class():
 
 def test_func():
     list_func = []
-    list_param = ['foo','bar']
+    list_param = ['foo', 'bar']
     for i in list_param:
         def print_func():
             print(i)
+
 
         list_func += [print_func]
 
@@ -151,77 +157,30 @@ def test_tag_retrieve():
     soup = BeautifulSoup(f.read())
     f.close()
 
+
     def retrieve(tag):
         import re
+
         toto = re.compile('left-skyscraper')
 
         if 'id' in tag.attrs and toto.match(tag.attrs['id']):
             print(tag)
         return True
 
-    soup.find_all(retrieve)
-
-test_tag_retrieve()
-
-class TagRetriever():
-    needed = {'src': [{'regex': ['.*([0-9])+'], 'entitled': 'http://c.mfcdn.net/store/manga/{}.jpg'}, {'entitled': 'toto'}, 'titi']}
-    not_needed = {'or': [{'id': 'toto'}, {'class': 'tutu'}]}
-
-    def __init__(self,tag,attrs):
-        self.tag = tag
-        if 'needed' in attrs:
-            self.needed = attrs['needed']
-        else:
-            self.needed = attrs
-        if 'not' in attrs :
-            self.not_needed = attrs['not']
-        else:
-            self.not_needed = None
-
-        self.function = self.build_function
-
-
-    def build_function(self,tag):
-        def eval_value(value):
-            if isinstance(value,str):
-                return value
-            if isinstance(value,dict) and 'entitled' in value:
-                if 'regex' in value:
-                    return value['entitled'].format(value['regex'])
-                else:
-                    return value['entitled']
-
-
-
-        def retrieve_attr(tag,elements):
-            for key,values in elements.items():
-                if key == "or":
-                    return any([retrieve_attr(tag,value) for value in values])
-                elif key == "and":
-                    return all([retrieve_attr(tag,value) for value in values])
-                else:
-                    if tag.has_key(key):
-                        if isinstance(values,list):
-                            return any([tag['key'] == value for value in values])
-                        else :
-                            return tag['key'] == values
-                    else:
-                        return False
-
-        if self.not_needed is None:
-            return retrieve_attr(tag,self.needed)
-        else:
-            return retrieve_attr(tag,self.needed) \
-                    and not retrieve_attr(tag,self.not_needed)
-
-
-    def __call__(self,tag):
-        return self.function(tag)
-
 def test_parsing():
-    f = open('page.html','r')
-    beauty = BeautifulSoup(f.read(),'html5lib')
+    f = open('page.html', 'r')
+    beauty = BeautifulSoup(f.read(), 'html5lib')
     f.close()
+
+def test_re():
+    import re
+
+    titi = {}
+    toto = re.compile('bla')
+    pattern_type = type(re.compile("foo"))
+
+    if isinstance(toto, pattern_type):
+        print('ok')
 
 
 if __name__ == "__main__":
@@ -240,6 +199,3 @@ if __name__ == "__main__":
 #    test_parsing()
 #    pyYAML()
 #    test_beautiful()
-
-
-

@@ -1,4 +1,4 @@
-from objects import Link
+from objects import Link,TagRetriever
 
 
 __author__ = 'mvidori'
@@ -36,23 +36,23 @@ def initialize(document):
                 parse_links(struct[key], value,path+[key])
 
 
-    def parse_parsing_next(struct, document, is_parsing):
+    def parse_parsing_next(struct, document):
         for key, value in document.items():
             if key in struct:
-                parse_parsing_next(struct[key], value, is_parsing)
+                parse_parsing_next(struct[key], value)
             else:
                 links = get_links(struct)
                 for link in links:
-                    if is_parsing:
-                        link.catchers[key] = value
+                    if key == 'link':
+                        link.next = TagRetriever('a',value)
                     else:
-                        link.next[key] = value
+                        link.tag_retrievers += [TagRetriever(key,value)]
 
 
     links_struct = {}
     parse_links(links_struct, document['links'],[])
-    parse_parsing_next(links_struct, document['parsing'], True)
-    parse_parsing_next(links_struct, document['next'], False)
+    parse_parsing_next(links_struct, document['parsing'])
+    parse_parsing_next(links_struct, document['next'])
 
     return get_links(links_struct)
 
