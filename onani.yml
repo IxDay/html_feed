@@ -12,24 +12,26 @@ links :
       - entitled : http://mangafox.me/manga/onani_master_kurosawa/v04/c{}/1.html
         courses:
           - start: '025'
-            end: '031'
+            end: '025'
             step: '1'
 parsing :
   onani:
-    img:
+    img 1:
       needed:
-        src:
-          -
-            entitled : http://c.mfcdn.net/store/manga/{}.jpg
-            regex :
-              - '.*([0-9])+'
-          -
-            entitled : toto
-          - titi
+        and:
+          src:
+            -
+              entitled : http://c.mfcdn.net/store/manga/{}.jpg
+              regex :
+                - '.*([0-9])+'
+            -
+              entitled : toto
+            - titi
+          id: image
       not_needed:
         or :
-          - id: toto
-          - class: tutu
+          id: toto
+          class: tutu
 next :
   onani:
     link:
@@ -37,3 +39,7 @@ next :
         class : btn next_page
       not_needed :
         onclick : next_chapter()
+
+path:
+  onani:
+    path_name : c:/users/mvidori/desktop

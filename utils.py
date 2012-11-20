@@ -36,23 +36,26 @@ def initialize(document):
                 parse_links(struct[key], value,path+[key])
 
 
-    def parse_parsing_next(struct, document):
+    def parse_parsing_next(struct, document, part):
         for key, value in document.items():
             if key in struct:
-                parse_parsing_next(struct[key], value)
+                parse_parsing_next(struct[key], value,part)
             else:
                 links = get_links(struct)
                 for link in links:
-                    if key == 'link':
+                    if part =='next':
                         link.next = TagRetriever('a',value)
-                    else:
+                    elif part == 'path':
+                        link.set_path(value)
+                    elif part == 'parsing':
                         link.tag_retrievers += [TagRetriever(key,value)]
 
 
     links_struct = {}
     parse_links(links_struct, document['links'],[])
-    parse_parsing_next(links_struct, document['parsing'])
-    parse_parsing_next(links_struct, document['next'])
+    parse_parsing_next(links_struct, document['parsing'],'parsing')
+    parse_parsing_next(links_struct, document['next'],'next')
+    parse_parsing_next(links_struct, document['path'],'path')
 
     return get_links(links_struct)
 

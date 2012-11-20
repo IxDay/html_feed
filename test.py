@@ -25,15 +25,19 @@ def beautifulSoup():
     print(soup.prettify())
 
 def test_main():
+    def callback(element):
+        print(element)
+
     f = open('onani.yml')
     y = yaml.load(f.read())
     f.close()
 
     link = utils.initialize(y)[0]
     link.get_elements()
-    print('toto')
+    link.manipulate_elements(callback)
+    pass
 
-test_main()
+
 
 def test_yml():
     f = open('onani.yml')
@@ -57,8 +61,13 @@ def test_dict():
 #    toto = toto or False
 #    print(toto)
     dic = {'toto': 1, 'titi': 2}
-    for i in dic:
-        print(i)
+#    for i in dic:
+#        print(i)
+
+
+    value = dic.items()
+
+    print(value)
 
 def ternary():
     toto = 'test'
@@ -106,7 +115,7 @@ def test_beautiful():
 def test_format():
     print('test{}test'.format('test' * 0))
 
-def test_urllib():
+def test_urllib2():
     import urllib2
 
     try:
@@ -182,9 +191,23 @@ def test_re():
     if isinstance(toto, pattern_type):
         print('ok')
 
+def test_urllib():
+    import urllib
+    t = urllib.urlopen('www.google.fr')
+    print t.read()
+
+def test_dir_manipulation():
+    import os.path
+    import os
+#    print os.path.exists('c:/users/mvidori/desktop')
+    list_path = ['onani', 'volume4']
+    print(os.getcwd())
+    print(os.path.join(os.getcwd(),'c:/users/mvidori/desktop',*list_path))
+    os.makedirs('c:/users/mvidori/desktop\\onani\\volume4')
 
 if __name__ == "__main__":
-    pass
+    test_main()
+#    test_dir_manipulation()
 #    beautifulSoup()
 #    test_dict()
 #    ternary()
@@ -199,3 +222,4 @@ if __name__ == "__main__":
 #    test_parsing()
 #    pyYAML()
 #    test_beautiful()
+    pass
