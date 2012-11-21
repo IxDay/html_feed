@@ -6,7 +6,7 @@
 #config:
 #  *myAliasName  # this will be replaced with the two values from above as the plugin reads this config
 
-links :
+html_links :
   onani:
     volume4:
       - entitled : http://mangafox.me/manga/onani_master_kurosawa/v04/c{}/1.html
@@ -14,7 +14,7 @@ links :
           - start: '025'
             end: '025'
             step: '1'
-parsing :
+html_parse :
   onani:
     img 1:
       needed:
@@ -32,7 +32,7 @@ parsing :
         or :
           id: toto
           class: tutu
-next :
+html_next :
   onani:
     link:
       needed :
@@ -40,6 +40,6 @@ next :
       not_needed :
         onclick : next_chapter()
 
-path:
+html_path:
   onani:
     path_name : c:/users/mvidori/desktop

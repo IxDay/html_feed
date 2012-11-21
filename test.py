@@ -1,6 +1,7 @@
 import inspect
 import os
 import bs4
+from objects import Parsing, LinkDownload
 import utils
 
 
@@ -33,8 +34,10 @@ def beautifulSoup():
     print(soup.prettify())
 
 def test_main():
-    link = utils.initialize('onani.yml')[0]
-    link.retrieve_elements()
+#    link = utils.initialize('onani.yml')[0]
+#    link.retrieve_elements()
+    toto = Parsing('onani.yml',LinkDownload)
+    toto.parse()
     pass
 
 def test_tag():
@@ -141,6 +144,8 @@ def test_urllib2():
 
 def test_class():
     class Toto:
+        static = public
+
         def __init__(self):
             self.name = 'test'
 
@@ -177,9 +182,10 @@ def test_class():
 #    var.function_lambda()
 #    var.function_lambda('titi')
 #    var.public()
-    var = Titi()
-    if isinstance(var,Toto):
-        print('toto')
+#    var = Titi()
+#    if isinstance(var,Toto):
+#        print('toto')
+    var.static()
 
 
 
@@ -291,8 +297,8 @@ def test_kwargs(**kwargs):
 
 
 if __name__ == "__main__":
-#    test_main()
-    test_kwargs(toto='titi')
+    test_main()
+#    test_kwargs(toto='titi')
 #    test_urlretrieve()
 #    test_openfile()
 #    test_class()

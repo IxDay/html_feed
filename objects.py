@@ -5,9 +5,9 @@ __author__ = 'mvidori'
 import re, bs4, urllib
 
 
+class Link(object):
+    __parsing = ['html_parse', 'html_next']
 
-class Link:
-    __parsing = ['parse','next']
 
     def __init__(self, name, path):
         self.name = name
@@ -18,20 +18,30 @@ class Link:
         self.next = None
 
 
+    def html_parse(self, tag, value):
+        self.tag_retrievers += [TagRetriever(tag, value)]
+
+
+    def html_next(self, tag, value):
+        self.next = TagRetriever('a', value)
+
+
     @classmethod
-    def add_parsing(cls,*parsing):
-        cls.__parsing += parsing
+    def add_parsing(cls, *parsing_methods):
+        cls.__parsing += parsing_methods
 
     @classmethod
     def get_parsing(cls):
         return cls.__parsing
 
+
     def __repr__(self):
         return 'Link({})'.format(self.name)
 
 
-    def callback(self,element):
+    def callback(self, element):
         pass
+
 
     def set_element(self, tag, elements):
         if tag not in self.elements:
@@ -144,27 +154,37 @@ class Link:
 
 
 class LinkDownload(Link):
+    Link.add_parsing('html_path')
+
+
     def __init__(self, name, path):
-        Link.__init__(self, name, path)
+        super(LinkDownload, self).__init__(name, path)
         self.__os_path = os.getcwd()
 
-    def set_path(self,path):
-        path_tmp = os.path.join(self.__os_path,path)
-        if not os.path.exists(path_tmp) :
+
+    def set_path(self, path):
+        path_tmp = os.path.join(self.__os_path, path)
+        if not os.path.exists(path_tmp):
             path_tmp = os.getcwd()
-        self.__os_path = os.path.join(path_tmp,*self.path)
+        self.__os_path = os.path.join(path_tmp, *self.path)
+
 
     def get_path(self):
         return self.__os_path
 
 
-    def callback(self,element):
+    def html_path(self, key, value):
+        self.set_path(value)
+
+
+    def callback(self, element):
         if not os.path.exists(self.__os_path):
             os.makedirs(self.__os_path)
 
-        if element.name == 'img' :
-            filename = os.path.join(self.__os_path,os.path.basename(element['src']))
-            urllib.urlretrieve(element['src'],filename)
+        if element.name == 'img':
+            filename = os.path.join(self.__os_path,
+                                    os.path.basename(element['src']))
+            urllib.urlretrieve(element['src'], filename)
 
 
 class TagRetriever():
@@ -184,6 +204,7 @@ class TagRetriever():
             TagRetriever.__pre_treatment(self.not_needed)
         else:
             self.not_needed = None
+
 
     @staticmethod
     def __pre_treatment(struct):
@@ -251,20 +272,91 @@ class TagRetriever():
         return self.build_function(tag)
 
 
+class DocumentMalformed(Exception):
+    def __init__(self, missing_tag):
+        super(DocumentMalformed, self).__init__()
+        self.missing_tag = missing_tag
+
+
+    def __repr__(self):
+        return '{}: Missing yaml tag: {}'.format(self.__class__.__name__,
+                                                 self.missing_tag)
+
+
 class Parsing:
-    def __init__(self,filename,link_object):
+    def __init__(self, filename, link_class):
         self.filename = filename
-        if isinstance(link_object,Link):
-           self.link = link_object
+        self.links_struct = {}
+
+        if issubclass(link_class, Link):
+            self.link_class = link_class
         else:
-            self.link = Link
+            self.link_class = Link
 
 
+    def parse_links(self, struct, document, path):
+        if isinstance(document, list):
+            for elt in document:
+                if isinstance(elt, dict):
+                    link = self.link_class(elt['entitled'], path)
+                    link.courses = elt['courses']
+                else:
+                    link = self.link_class(elt, path)
+                struct += [link]
+        else:
+            for key, value in document.items():
+                struct[key] = type(value)()
+                self.parse_links(struct[key], value, path + [key])
+
+
+    def get_links(self,struct):
+        if isinstance(struct, Link):
+            return [struct]
+        if not len(struct):
+            return []
+        if isinstance(struct, dict):
+            struct = dict(struct)
+            return self.get_links(struct.popitem()[1]) + self.get_links(struct)
+        if isinstance(struct, list):
+            struct = list(struct)
+            return self.get_links(struct.pop()) + self.get_links(struct)
+
+
+    def parse_tag(self,struct, document, parse_function):
+        for key, value in document.items():
+            if key in struct:
+                self.parse_tag(struct[key], value,parse_function)
+            else:
+                links = self.get_links(struct)
+                for link in links:
+                    toto = getattr(link,parse_function)
+                    toto(key,value)
+                    pass
 
     def parse(self):
         import yaml
-        with open(self.filename,'r') as f:
-            try :
+
+        def raise_document_malformed(document):
+            if 'html_links' not in document:
+                raise DocumentMalformed('html_links')
+            for tag in self.link_class.get_parsing():
+                if tag not in document:
+                    raise DocumentMalformed(tag)
+
+
+        with open(self.filename, 'r') as f:
+            try:
                 document = yaml.load(f.read())
-            except IOError :
+            except IOError:
                 raise
+
+        raise_document_malformed(document)
+
+
+        self.parse_links(self.links_struct,document['html_links'],[])
+        for parser in self.link_class.get_parsing():
+            self.parse_tag(self.links_struct,document[parser],parser)
+        pass
+
+
+
