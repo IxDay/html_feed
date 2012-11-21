@@ -1,3 +1,6 @@
+import inspect
+import os
+import bs4
 import utils
 
 
@@ -5,6 +8,8 @@ __author__ = 'mvidori'
 
 from bs4 import BeautifulSoup
 import yaml
+
+
 
 def beautifulSoup():
     html_doc = """
@@ -21,22 +26,27 @@ def beautifulSoup():
 
     <p class="story">...</p>
     """
-    soup = BeautifulSoup(html_doc)
+#    soup = BeautifulSoup(html_doc)
+#    print(soup.prettify())
+
+    soup = BeautifulSoup('<a href="http://example.com/elsie" class="sister" id="link1">Elsie</a>')
     print(soup.prettify())
 
 def test_main():
-    def callback(element):
-        print(element)
-
-    f = open('onani.yml')
-    y = yaml.load(f.read())
-    f.close()
-
-    link = utils.initialize(y)[0]
-    link.get_elements()
-    link.manipulate_elements(callback)
+    link = utils.initialize('onani.yml')[0]
+    link.retrieve_elements()
     pass
 
+def test_tag():
+    toto = bs4.Tag()
+#    toto.
+
+def test_urlretrieve():
+    import urllib,os
+#    urllib.urlretrieve('http://c.mfcdn.net/store/manga/3402/04-025'
+#                       '.0/compressed/h25.jpg','toto')
+    name = 'http://c.mfcdn.net/store/manga/3402/04-025.0/compressed/h25.jpg'
+    print os.path.basename(name)
 
 
 def test_yml():
@@ -93,6 +103,7 @@ def test_list():
     l1 = [1, 2]
     l2 = [1, 2, 3]
 
+
 def get_html_page():
     import urllib
 
@@ -142,11 +153,35 @@ def test_class():
 
             internal()
 
+        @staticmethod
+        def __private():
+            print('toto')
+
+        def __private_2(self):
+            print 'private 2'
+
+        def public(self):
+            Toto.__private()
+
+    class Titi (Toto):
+        def __init__(self):
+            Toto.__init__(self)
+
+#        def test(self):
+#            Toto.__private_2()
+
+
 
 
     var = Toto()
-    var.function_lambda()
-    var.function_lambda('titi')
+#    var.function_lambda()
+#    var.function_lambda('titi')
+#    var.public()
+    var = Titi()
+    if isinstance(var,Toto):
+        print('toto')
+
+
 
 def test_func():
     list_func = []
@@ -205,8 +240,62 @@ def test_dir_manipulation():
     print(os.path.join(os.getcwd(),'c:/users/mvidori/desktop',*list_path))
     os.makedirs('c:/users/mvidori/desktop\\onani\\volume4')
 
+def test_openfile():
+
+#
+#    from functools import wraps
+#    def make_wrapper(func):
+#        @wraps(func)
+#        def wrapper(*args, **kwargs):
+#            print("toto")
+#            func(args,kwargs)
+#
+#        return wrapper
+#
+#    def un_decorateur_passant_un_argument(fonction_a_decorer):
+#
+#        def un_wrapper_acceptant_des_arguments(*args, **kwargs):
+#            print "J'ai des arguments regarde :"
+#            fonction_a_decorer(*args, **kwargs)
+#
+#        return un_wrapper_acceptant_des_arguments
+#
+#
+#    @un_decorateur_passant_un_argument
+#    def afficher_nom():
+#        return file.close
+
+
+#    @make_wrapper
+#    def make_close():
+#        return file.close
+#
+#    file.close = afficher_nom()
+    with open('toto.html','r') as f:
+        try :
+            print f.read()
+        except IOError:
+            raise
+
+
+def test_kwargs(**kwargs):
+    def toto(param):
+        print(param)
+
+    allowed_functions = {'toto':toto}
+
+    for key,value in kwargs.items():
+        func = eval(key,{'__builtins__':None},allowed_functions)
+        func(value)
+
+
+
 if __name__ == "__main__":
-    test_main()
+#    test_main()
+    test_kwargs(toto='titi')
+#    test_urlretrieve()
+#    test_openfile()
+#    test_class()
 #    test_dir_manipulation()
 #    beautifulSoup()
 #    test_dict()
@@ -216,7 +305,6 @@ if __name__ == "__main__":
 #    test_list()
 #    test_format()
 #    test_urllib()
-#    test_class()
 #    test_tuple()
 #    test_yml()
 #    test_parsing()

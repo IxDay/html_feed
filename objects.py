@@ -1,33 +1,48 @@
+import os
+
 __author__ = 'mvidori'
 
-import utils, re, bs4, urllib,os
+import re, bs4, urllib
+
+
 
 class Link:
+    __parsing = ['parse','next']
+
     def __init__(self, name, path):
         self.name = name
         self.path = path
         self.courses = []
         self.tag_retrievers = []
-        self.next = None
         self.elements = {}
-        self.__os_path = os.getcwd()
+        self.next = None
 
-    def set_path(self,path):
-        path_tmp = os.path.join(self.__os_path,path)
-        if not os.path.exists(path_tmp) :
-            path_tmp = os.getcwd()
-        self.__os_path = os.path.join(path_tmp,*self.path)
 
-    def get_path(self):
-        return self.__os_path
+    @classmethod
+    def add_parsing(cls,*parsing):
+        cls.__parsing += parsing
+
+    @classmethod
+    def get_parsing(cls):
+        return cls.__parsing
 
     def __repr__(self):
         return 'Link({})'.format(self.name)
 
 
+    def callback(self,element):
+        pass
+
     def set_element(self, tag, elements):
         if tag not in self.elements:
             self.elements[tag] = []
+        else:
+            elements = [element for element in elements if
+                        element not in self.elements[tag]]
+
+        if self.callback is not None:
+            for element in elements:
+                self.callback(element)
 
         self.elements[tag].extend(elements)
 
@@ -58,26 +73,26 @@ class Link:
         return self.links
 
 
-    def get_html_feed(self,link,fail_on_error=False):
-        try:
-            html_feed = urllib.urlopen(link)
-
+    def retrieve_elements(self, start=0, end=None, fail_on_error=False):
+        def get_html_feed(link, fail_on_error=False):
             try:
-                return html_feed.read()
+                html_feed = urllib.urlopen(link)
+
+                try:
+                    return html_feed.read()
+                except IOError:
+                    if fail_on_error:
+                        raise
+                    return None
+                finally:
+                    html_feed.close()
+
             except IOError:
                 if fail_on_error:
                     raise
                 return None
-            finally:
-                html_feed.close()
-
-        except IOError:
-            if fail_on_error:
-                raise
-            return None
 
 
-    def get_elements(self, start=0, end=None, fail_on_error=False):
         def parse_html(html_feed, link):
             def get_next(soup):
                 next = soup.find_all(self.next)
@@ -112,25 +127,44 @@ class Link:
         for index, link in enumerate(self.links):
             next = link
             while next is not None:
-                html_feed = self.get_html_feed(next,fail_on_error)
+                html_feed = get_html_feed(next, fail_on_error)
                 if html_feed is not None:
                     next = parse_html(html_feed, next)
-                print next
             if index == end:
                 break
 
-        for elt in self.elements.values():
-            utils.delete_duplicates(elt)
 
-
-    def manipulate_elements(self,callback,tag_reference=None):
-
-        if tag_reference is None :
+    def manipulate_elements(self, callback, tag_reference=None):
+        if tag_reference is None:
             for tag_reference in self.elements.keys():
-                self.manipulate_elements(callback,tag_reference)
+                self.manipulate_elements(callback, tag_reference)
         else:
             for element in self.elements[tag_reference]:
                 callback(element)
+
+
+class LinkDownload(Link):
+    def __init__(self, name, path):
+        Link.__init__(self, name, path)
+        self.__os_path = os.getcwd()
+
+    def set_path(self,path):
+        path_tmp = os.path.join(self.__os_path,path)
+        if not os.path.exists(path_tmp) :
+            path_tmp = os.getcwd()
+        self.__os_path = os.path.join(path_tmp,*self.path)
+
+    def get_path(self):
+        return self.__os_path
+
+
+    def callback(self,element):
+        if not os.path.exists(self.__os_path):
+            os.makedirs(self.__os_path)
+
+        if element.name == 'img' :
+            filename = os.path.join(self.__os_path,os.path.basename(element['src']))
+            urllib.urlretrieve(element['src'],filename)
 
 
 class TagRetriever():
@@ -143,16 +177,16 @@ class TagRetriever():
             self.needed = attrs['needed']
         else:
             self.needed = attrs
-        self.pre_treatment(self.needed)
+        TagRetriever.__pre_treatment(self.needed)
 
         if 'not_needed' in attrs:
             self.not_needed = attrs['not_needed']
-            self.pre_treatment(self.not_needed)
+            TagRetriever.__pre_treatment(self.not_needed)
         else:
             self.not_needed = None
 
-
-    def pre_treatment(self, struct):
+    @staticmethod
+    def __pre_treatment(struct):
         if isinstance(struct, dict):
             if 'entitled' in struct and 'regex' in struct:
                 struct = re.compile(struct['entitled'].format
@@ -161,10 +195,10 @@ class TagRetriever():
                 struct = struct['entitled']
             else:
                 for key, value in struct.items():
-                    struct[key] = self.pre_treatment(value)
+                    struct[key] = TagRetriever.__pre_treatment(value)
         elif isinstance(struct, list):
             for index, value in enumerate(struct):
-                struct[index] = self.pre_treatment(value)
+                struct[index] = TagRetriever.__pre_treatment(value)
 
         return struct
 
@@ -215,3 +249,22 @@ class TagRetriever():
 
     def __call__(self, tag):
         return self.build_function(tag)
+
+
+class Parsing:
+    def __init__(self,filename,link_object):
+        self.filename = filename
+        if isinstance(link_object,Link):
+           self.link = link_object
+        else:
+            self.link = Link
+
+
+
+    def parse(self):
+        import yaml
+        with open(self.filename,'r') as f:
+            try :
+                document = yaml.load(f.read())
+            except IOError :
+                raise
