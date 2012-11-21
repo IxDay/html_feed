@@ -287,6 +287,7 @@ class Parsing:
     def __init__(self, filename, link_class):
         self.filename = filename
         self.links_struct = {}
+        self.links = []
 
         if issubclass(link_class, Link):
             self.link_class = link_class
@@ -308,18 +309,18 @@ class Parsing:
                 struct[key] = type(value)()
                 self.parse_links(struct[key], value, path + [key])
 
-
-    def get_links(self,struct):
+    @staticmethod
+    def __get_links(struct):
         if isinstance(struct, Link):
             return [struct]
         if not len(struct):
             return []
         if isinstance(struct, dict):
             struct = dict(struct)
-            return self.get_links(struct.popitem()[1]) + self.get_links(struct)
+            return Parsing.__get_links(struct.popitem()[1]) + Parsing.__get_links(struct)
         if isinstance(struct, list):
             struct = list(struct)
-            return self.get_links(struct.pop()) + self.get_links(struct)
+            return Parsing.__get_links(struct.pop()) + Parsing.__get_links(struct)
 
 
     def parse_tag(self,struct, document, parse_function):
@@ -327,11 +328,8 @@ class Parsing:
             if key in struct:
                 self.parse_tag(struct[key], value,parse_function)
             else:
-                links = self.get_links(struct)
-                for link in links:
-                    toto = getattr(link,parse_function)
-                    toto(key,value)
-                    pass
+                for link in self.links:
+                    getattr(link,parse_function)(key,value)
 
     def parse(self):
         import yaml
@@ -354,9 +352,8 @@ class Parsing:
 
 
         self.parse_links(self.links_struct,document['html_links'],[])
+        self.links = Parsing.__get_links(self.links_struct)
+
         for parser in self.link_class.get_parsing():
             self.parse_tag(self.links_struct,document[parser],parser)
         pass
-
-
-
