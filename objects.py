@@ -16,6 +16,17 @@ class Link(object):
         self.tag_retrievers = []
         self.elements = {}
         self.next = None
+        self.check_class_functions()
+
+
+    def check_class_functions(self):
+        class_functions = dir(self)
+        for parsing_function in self.__parsing:
+            if parsing_function not in class_functions:
+                raise ClassMalformed(
+                    self.__class__.__name__,
+                    parsing_function
+                )
 
 
     def html_parse(self, tag, value):
@@ -29,6 +40,7 @@ class Link(object):
     @classmethod
     def add_parsing(cls, *parsing_methods):
         cls.__parsing += parsing_methods
+
 
     @classmethod
     def get_parsing(cls):
@@ -181,13 +193,15 @@ class LinkDownload(Link):
         if not os.path.exists(self.__os_path):
             os.makedirs(self.__os_path)
 
+        print element.attrs['src']
+
         if element.name == 'img':
             filename = os.path.join(self.__os_path,
                                     os.path.basename(element['src']))
             urllib.urlretrieve(element['src'], filename)
 
 
-class TagRetriever():
+class TagRetriever(object):
     def __init__(self, tag, attrs):
         self.tag_reference = tag
         self.tag = tag.partition(' ')[0]
@@ -279,11 +293,33 @@ class DocumentMalformed(Exception):
 
 
     def __repr__(self):
-        return '{}: Missing yaml tag: {}'.format(self.__class__.__name__,
-                                                 self.missing_tag)
+        return 'Missing yaml tag: {}'.format(self.missing_tag)
 
 
-class Parsing:
+    def __str__(self):
+        return self.__repr__()
+
+
+class ClassMalformed(Exception):
+    def __init__(self, class_name, missing_function):
+        super(ClassMalformed, self).__init__()
+        self.missing_function = missing_function
+        self.class_name = class_name
+
+
+    def __repr__(self):
+        return\
+        'Missing functions in {} : <{}> expected and not found'.format(
+            self.class_name,
+            self.missing_function
+        )
+
+
+    def __str__(self):
+        return self.__repr__()
+
+
+class Compute(object):
     def __init__(self, filename, link_class):
         self.filename = filename
         self.links_struct = {}
@@ -309,27 +345,31 @@ class Parsing:
                 struct[key] = type(value)()
                 self.parse_links(struct[key], value, path + [key])
 
-    @staticmethod
-    def __get_links(struct):
+
+
+    def get_links(self,struct):
         if isinstance(struct, Link):
             return [struct]
         if not len(struct):
             return []
         if isinstance(struct, dict):
             struct = dict(struct)
-            return Parsing.__get_links(struct.popitem()[1]) + Parsing.__get_links(struct)
+            return self.get_links(
+                struct.popitem()[1]) + self.get_links(struct)
         if isinstance(struct, list):
             struct = list(struct)
-            return Parsing.__get_links(struct.pop()) + Parsing.__get_links(struct)
+            return self.get_links(struct.pop()) + self.get_links(
+                struct)
 
 
-    def parse_tag(self,struct, document, parse_function):
+    def parse_tag(self, struct, document, parse_function):
         for key, value in document.items():
             if key in struct:
-                self.parse_tag(struct[key], value,parse_function)
+                self.parse_tag(struct[key], value, parse_function)
             else:
                 for link in self.links:
-                    getattr(link,parse_function)(key,value)
+                    getattr(link, parse_function)(key, value)
+
 
     def parse(self):
         import yaml
@@ -350,10 +390,15 @@ class Parsing:
 
         raise_document_malformed(document)
 
-
-        self.parse_links(self.links_struct,document['html_links'],[])
-        self.links = Parsing.__get_links(self.links_struct)
+        self.parse_links(self.links_struct, document['html_links'], [])
+        self.links = self.get_links(self.links_struct)
 
         for parser in self.link_class.get_parsing():
-            self.parse_tag(self.links_struct,document[parser],parser)
-        pass
+            self.parse_tag(self.links_struct, document[parser], parser)
+
+    def fetch_all_html_pages(self):
+        if not len(self.links):
+            self.parse()
+
+        for link in self.links:
+            link.retrieve_elements()

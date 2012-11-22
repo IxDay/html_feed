@@ -1,7 +1,7 @@
 import inspect
 import os
 import bs4
-from objects import Parsing, LinkDownload
+from objects import Compute, LinkDownload
 import utils
 
 
@@ -36,8 +36,8 @@ def beautifulSoup():
 def test_main():
 #    link = utils.initialize('onani.yml')[0]
 #    link.retrieve_elements()
-    toto = Parsing('onani.yml',LinkDownload)
-    toto.parse()
+    toto = Compute('onani.yml',LinkDownload)
+    toto.fetch_all_html_pages()
     pass
 
 def test_tag():
@@ -74,7 +74,15 @@ def test_dict():
 #    toto = toto or False
 #    print(toto)
     dic = {'toto': 1, 'titi': 2}
-#    for i in dic:
+
+    if len(dic):
+        print('ok')
+
+    dic2 = {}
+    if not len(dic2):
+        print('ok dic2')
+
+    #    for i in dic:
 #        print(i)
 
 
@@ -144,11 +152,12 @@ def test_urllib2():
 
 def test_class():
     class Toto:
-        static = public
+        toto = 'toto'
 
         def __init__(self):
             self.name = 'test'
-
+            print(self.toto)
+            print(dir(self))
 
         def function_lambda(self, test='bla'):
             def internal():
@@ -157,6 +166,10 @@ def test_class():
 
 
             internal()
+
+        @classmethod
+        def modify_toto(cls):
+            cls.toto += 'titi'
 
         @staticmethod
         def __private():
@@ -168,25 +181,30 @@ def test_class():
         def public(self):
             Toto.__private()
 
+        def test_dir(self):
+            print(dir(self))
+
     class Titi (Toto):
+        Toto.modify_toto()
+
         def __init__(self):
             Toto.__init__(self)
+
+        def new_function(self):
+            print('nawak')
 
 #        def test(self):
 #            Toto.__private_2()
 
-
-
-
-    var = Toto()
+#    var = Toto()
 #    var.function_lambda()
 #    var.function_lambda('titi')
 #    var.public()
-#    var = Titi()
+#    print( Toto.toto)
+    var = Titi()
 #    if isinstance(var,Toto):
 #        print('toto')
-    var.static()
-
+#    var.test_dir()
 
 
 def test_func():
@@ -295,9 +313,15 @@ def test_kwargs(**kwargs):
         func(value)
 
 
+def test_get_args():
+    def function_with_args(titi,tutu,toto):
+        pass
+
+    print(inspect.getargspec(function_with_args)[0])
 
 if __name__ == "__main__":
     test_main()
+#    test_get_fargs()
 #    test_kwargs(toto='titi')
 #    test_urlretrieve()
 #    test_openfile()
