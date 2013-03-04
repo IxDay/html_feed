@@ -11,7 +11,6 @@ from bs4 import BeautifulSoup
 import yaml
 
 
-
 def beautifulSoup():
     html_doc = """
     <html><head><title>The Dormouse's story</title></head>
@@ -27,27 +26,34 @@ def beautifulSoup():
 
     <p class="story">...</p>
     """
-#    soup = BeautifulSoup(html_doc)
-#    print(soup.prettify())
+    #    soup = BeautifulSoup(html_doc)
+    #    print(soup.prettify())
 
-    soup = BeautifulSoup('<a href="http://example.com/elsie" class="sister" id="link1">Elsie</a>')
+    soup = BeautifulSoup(
+        '<a href="http://example.com/elsie" class="sister" id="link1">Elsie</a>')
     print(soup.prettify())
 
+
 def test_main():
-#    link = utils.initialize('onani.yml')[0]
-#    link.retrieve_elements()
-    toto = Compute('onani.yml',LinkDownload)
+    toto = Compute('onani.yml', LinkDownload)
     toto.fetch_all_html_pages()
     pass
 
+
 def test_tag():
     toto = bs4.Tag()
+
 #    toto.
 
+
+def test_path():
+    print(os.path.join(os.path.expanduser("~"), 'c:/users/mvidori/toto'))
+
+
 def test_urlretrieve():
-    import urllib,os
-#    urllib.urlretrieve('http://c.mfcdn.net/store/manga/3402/04-025'
-#                       '.0/compressed/h25.jpg','toto')
+    import os
+    #    urllib.urlretrieve('http://c.mfcdn.net/store/manga/3402/04-025'
+    #                       '.0/compressed/h25.jpg','toto')
     name = 'http://c.mfcdn.net/store/manga/3402/04-025.0/compressed/h25.jpg'
     print os.path.basename(name)
 
@@ -57,9 +63,11 @@ def test_yml():
     y = yaml.load(f.read())
     f.close()
 
+
 def test_tuple():
     tup = ('1', '2', '3')
     print(tup[2])
+
 
 def test_dict():
 #    fonctionne pas
@@ -82,22 +90,24 @@ def test_dict():
     if not len(dic2):
         print('ok dic2')
 
-    #    for i in dic:
-#        print(i)
-
+        #    for i in dic:
+    #        print(i)
 
     value = dic.items()
 
     print(value)
+
 
 def ternary():
     toto = 'test'
     test = (toto == 'test' and 'ok' or 'nok')
     print(test)
 
+
 def test_splat():
     toto = ['toto', 'titi', 'tutu']
     print('{} {} {}'.format(*toto))
+
 
 def test_for():
     i = 0
@@ -109,6 +119,7 @@ def test_for():
 
     toto = [[x, y] for x in range(25) for y in range(25)]
     print(toto)
+
 
 def test_list():
     l1 = [1, 2]
@@ -125,6 +136,7 @@ def get_html_page():
     f.close()
     html_file.close()
 
+
 def test_beautiful():
     f = open('onani.yml')
     y = yaml.load(f.read())
@@ -134,8 +146,10 @@ def test_beautiful():
     links.get_elements()
     print('toto')
 
+
 def test_format():
     print('test{}test'.format('test' * 0))
+
 
 def test_urllib2():
     import urllib2
@@ -150,6 +164,7 @@ def test_urllib2():
         print("mauvaise url")
         raise
 
+
 def test_class():
     class Toto:
         toto = 'toto'
@@ -163,7 +178,6 @@ def test_class():
             def internal():
                 print(self.name)
                 print(test)
-
 
             internal()
 
@@ -184,7 +198,7 @@ def test_class():
         def test_dir(self):
             print(dir(self))
 
-    class Titi (Toto):
+    class Titi(Toto):
         Toto.modify_toto()
 
         def __init__(self):
@@ -193,15 +207,17 @@ def test_class():
         def new_function(self):
             print('nawak')
 
-#        def test(self):
-#            Toto.__private_2()
+            #        def test(self):
+            #            Toto.__private_2()
 
-#    var = Toto()
-#    var.function_lambda()
-#    var.function_lambda('titi')
-#    var.public()
-#    print( Toto.toto)
+            #    var = Toto()
+            #    var.function_lambda()
+            #    var.function_lambda('titi')
+            #    var.public()
+            #    print( Toto.toto)
+
     var = Titi()
+
 #    if isinstance(var,Toto):
 #        print('toto')
 #    var.test_dir()
@@ -214,17 +230,16 @@ def test_func():
         def print_func():
             print(i)
 
-
         list_func += [print_func]
 
     for func in list_func:
         func()
 
+
 def test_tag_retrieve():
     f = open('page.html')
     soup = BeautifulSoup(f.read())
     f.close()
-
 
     def retrieve(tag):
         import re
@@ -235,10 +250,12 @@ def test_tag_retrieve():
             print(tag)
         return True
 
+
 def test_parsing():
     f = open('page.html', 'r')
     beauty = BeautifulSoup(f.read(), 'html5lib')
     f.close()
+
 
 def test_re():
     import re
@@ -250,19 +267,23 @@ def test_re():
     if isinstance(toto, pattern_type):
         print('ok')
 
+
 def test_urllib():
     import urllib
+
     t = urllib.urlopen('www.google.fr')
     print t.read()
+
 
 def test_dir_manipulation():
     import os.path
     import os
-#    print os.path.exists('c:/users/mvidori/desktop')
+    #    print os.path.exists('c:/users/mvidori/desktop')
     list_path = ['onani', 'volume4']
     print(os.getcwd())
-    print(os.path.join(os.getcwd(),'c:/users/mvidori/desktop',*list_path))
+    print(os.path.join(os.getcwd(), 'c:/users/mvidori/desktop', *list_path))
     os.makedirs('c:/users/mvidori/desktop\\onani\\volume4')
+
 
 def test_openfile():
 
@@ -295,8 +316,8 @@ def test_openfile():
 #        return file.close
 #
 #    file.close = afficher_nom()
-    with open('toto.html','r') as f:
-        try :
+    with open('toto.html', 'r') as f:
+        try:
             print f.read()
         except IOError:
             raise
@@ -306,38 +327,53 @@ def test_kwargs(**kwargs):
     def toto(param):
         print(param)
 
-    allowed_functions = {'toto':toto}
+    allowed_functions = {'toto': toto}
 
-    for key,value in kwargs.items():
-        func = eval(key,{'__builtins__':None},allowed_functions)
+    for key, value in kwargs.items():
+        func = eval(key, {'__builtins__': None}, allowed_functions)
         func(value)
 
 
+def test_class_attributes():
+    class A:
+        attr = True
+
+    toto = A()
+    titi = A()
+
+    toto.attr = False
+    A.attr = False
+
+    print(titi.attr)
+
+
 def test_get_args():
-    def function_with_args(titi,tutu,toto):
+    def function_with_args(titi, tutu, toto):
         pass
 
     print(inspect.getargspec(function_with_args)[0])
 
 if __name__ == "__main__":
     test_main()
-#    test_get_fargs()
-#    test_kwargs(toto='titi')
-#    test_urlretrieve()
-#    test_openfile()
-#    test_class()
-#    test_dir_manipulation()
-#    beautifulSoup()
-#    test_dict()
-#    ternary()
-#    test_splat()
-#    test_for()
-#    test_list()
-#    test_format()
-#    test_urllib()
-#    test_tuple()
-#    test_yml()
-#    test_parsing()
-#    pyYAML()
-#    test_beautiful()
+    #    test_path()
+    #    test_class_attributes()
+    #    test_get_fargs()
+    #    test_kwargs(toto='titi')
+    #    test_urlretrieve()
+    #    test_openfile()
+    #    test_class()
+    #    test_dir_manipulation()
+    #    beautifulSoup()
+    #    test_dict()
+    #    ternary()
+    #    test_splat()
+    #    test_for()
+    #    test_list()
+    #    test_format()
+    #    test_urllib()
+    #    test_tuple()
+    #    test_yml()
+    #    test_parsing()
+    #    pyYAML()
+    #    test_beautiful()
     pass

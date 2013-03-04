@@ -21,7 +21,7 @@ html_parse :
         and:
           src:
             -
-              entitled : http://c.mfcdn.net/store/manga/{}.jpg
+              entitled : http://z.mfcdn.net/store/manga/{}.jpg
               regex :
                 - '.*([0-9])+'
             -
@@ -42,4 +42,4 @@ html_next :
 
 html_path:
   onani:
-    path_name : c:/users/mvidori/desktop
+    path_name : c:/users/mvidori/desktop/toto
